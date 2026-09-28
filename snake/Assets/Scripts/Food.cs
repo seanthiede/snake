@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Food : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem eatParticlePrefab;
+
     public BoxCollider2D gridArea;
 
     private void Start()
@@ -20,10 +22,16 @@ public class Food : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Snake")
         {
-            if (other.tag == "Snake")
+
+            if (eatParticlePrefab != null)
             {
-                RandomizedPositions();
+                Instantiate(eatParticlePrefab, transform.position, Quaternion.identity);
             }
+
+            RandomizedPositions();
+        }
     }
 }
