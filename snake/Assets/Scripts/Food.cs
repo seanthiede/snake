@@ -3,6 +3,7 @@ using UnityEngine;
 public class Food : MonoBehaviour
 {
     [SerializeField] private ParticleSystem eatParticlePrefab;
+    [SerializeField] private Snake snake;
 
     public BoxCollider2D gridArea;
 
@@ -14,11 +15,17 @@ public class Food : MonoBehaviour
     private void RandomizedPositions()
     {
         Bounds bounds = this.gridArea.bounds;
+        int x, y;
 
-        float x = Random.Range(bounds.min.x, bounds.max.x);
-        float y = Random.Range(bounds.min.y, bounds.max.y);
+        do
+        {
+            x = Mathf.RoundToInt(Random.Range(bounds.min.x, bounds.max.x));
+            y = Mathf.RoundToInt(Random.Range(bounds.min.y, bounds.max.y));
 
-        this.transform.position = new Vector3(Mathf.Round(x), Mathf.Round(y), 0.0f);
+        }
+        while (snake != null && snake.Occupies(x, y));
+
+        this.transform.position = new Vector3(x, y, 0.0f);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -10,7 +10,11 @@ public class PowerUpSpawner : MonoBehaviour
     [SerializeField] private float minSpawnDelay = 8f;
     [SerializeField] private float maxSpawnDelay = 15f;
 
-    private PowerUp current; // max one power-up at a time
+    [Header("Golden Food")]
+    [SerializeField] private GoldenFood goldenFoodPrefab;
+
+    private GoldenFood currentGolden;
+    private PowerUp currentPowerUp; // max one power-up at a time
     private float timer;
 
     private void Start()
@@ -21,7 +25,7 @@ public class PowerUpSpawner : MonoBehaviour
     private void Update()
     {
         if (!GameManager.Instance.IsPlaying) return;
-        if (current != null) return;
+        if (currentPowerUp != null) return;
 
         timer -= Time.deltaTime;
 
@@ -35,7 +39,7 @@ public class PowerUpSpawner : MonoBehaviour
     private void Spawn()
     {
         PowerUp prefab = powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)];
-        current = Instantiate(prefab, GetFreePosition(), Quaternion.identity);
+        currentPowerUp = Instantiate(prefab, GetFreePosition(), Quaternion.identity);
     }
 
     private Vector3 GetFreePosition()
@@ -48,8 +52,25 @@ public class PowerUpSpawner : MonoBehaviour
             x = Mathf.RoundToInt(Random.Range(b.min.x, b.max.x));
             y = Mathf.RoundToInt(Random.Range(b.min.y, b.max.y));
         }
-        while (snake.Occupies(x, y) || Mathf.RoundToInt(food.position.x) == x && Mathf.RoundToInt(food.position.y) == y);
+        while (snake.Occupies(x, y) ||
+           IsOnField(food, x, y) ||
+           IsOnField(currentPowerUp, x, y) ||
+           IsOnField(currentGolden, x, y));
 
         return new Vector3(x, y, 0f);
+    }
+
+    public void SpawnGoldenFood()
+    {
+        if (currentGolden != null) return;
+
+        currentGolden = Instantiate(goldenFoodPrefab, GetFreePosition(), Quaternion.identity);
+    }
+
+    private bool IsOnField(Component obj, int x, int y)
+    {
+        return obj != null && 
+            Mathf.RoundToInt(obj.transform.position.x) == x && 
+            Mathf.RoundToInt(obj.transform.position.y) == y;
     }
 }

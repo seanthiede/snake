@@ -47,6 +47,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float ghostDuration = 5f;
     [SerializeField] private int poisonShrinkAmount = 5;
 
+    [Header("Golden Food")]
+    [SerializeField] private PowerUpSpawner powerUpSpawner;
+    [SerializeField] private int goldenFoodEvery = 5; // after every xth food
+
     private Coroutine slowMotionRoutine;
     private Coroutine ghostRoutine;
     private Coroutine powerUpTextRoutine;
@@ -57,6 +61,7 @@ public class GameManager : MonoBehaviour
     private bool isDying;
     private int score;
     private int highscore;
+    private int foodEaten;
 
     private void Awake()
     {
@@ -106,6 +111,21 @@ public class GameManager : MonoBehaviour
 
         score++;
         UpdateScoreTexts();
+
+        foodEaten++;
+        if (foodEaten % goldenFoodEvery == 0)
+        {
+            powerUpSpawner.SpawnGoldenFood();
+        }
+    }
+
+    public void AddBonusPoints(int amount)
+    {
+        if (isDying) return;
+
+        score += amount;
+        UpdateScoreTexts();
+        ShowPowerUpText($"+{amount}!");
     }
 
     private void UpdateScoreTexts()

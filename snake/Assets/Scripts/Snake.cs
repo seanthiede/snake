@@ -10,6 +10,7 @@ public class Snake : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float ghostAlpha = 0.35f;
 
     private Vector2 direction = Vector2.right;
+    private Vector2 nextDirection = Vector2.right;
     private List<Transform> segments = new List<Transform>();
     private bool isGhost;
 
@@ -22,16 +23,17 @@ public class Snake : MonoBehaviour
 
         if (horizontal != 0.0f && direction.x == 0.0f)
         {
-            direction = new Vector2(horizontal, 0.0f);
+            nextDirection = new Vector2(horizontal, 0.0f);
         }
         else if (vertical != 0.0f && direction.y == 0.0f)
         {
-            direction = new Vector2(0.0f, vertical);
+            nextDirection = new Vector2(0.0f, vertical);
         }
     }
 
     private void FixedUpdate()
     {
+        direction = nextDirection;
         for (int i = segments.Count - 1; i > 0; i--)
         {
             segments[i].position = segments[i - 1].position;
@@ -56,6 +58,7 @@ public class Snake : MonoBehaviour
     {
         isGhost = false;
         direction = Vector2.right;
+        nextDirection = Vector2.right;
 
         for (int i = 1; i < segments.Count; i++)
         {
